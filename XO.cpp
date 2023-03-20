@@ -117,5 +117,7 @@ void Game::viewResult() const {
   } else if (state == players[1].getSymbol()) {
     cout << players[1].getName() << "You win!  " << players[0].getName()
          << " but you loose..." << endl;
+  } else {
+    cout << "Draw" << endl;
   }
 }
