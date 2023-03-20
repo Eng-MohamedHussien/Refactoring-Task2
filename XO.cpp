@@ -21,26 +21,17 @@ void Game::show_cells() const {
   }
 }
 
-bool checkEmptyCell(char *cells, int index) {
-  if (cells[index - 1] != 'O' && cells[index - 1] != 'X') {
-    return true;
-  }
-  return false;
+bool checkEmptyCell(const std::string &cells, int index) {
+  return cells[index - 1] == '-';
 }
 
 bool validPlayerIndex(int index) {
-  if (index != 1 && index != 2) {
-    return false;
-  }
-
-  return true;
+  return index == int(PlayerMarker::player1) ||
+         index == int(PlayerMarker::player2);
 }
 
 bool validCellIndex(int index) {
-  if (index > 9 || index < 1) {
-    return false;
-  }
-  return true;
+  return index <= int(CellRange::end) && index >= int(CellRange::start);
 }
 
 void Game::makeMove(int playerIndex, int cell) {
@@ -55,40 +46,21 @@ void Game::makeMove(int playerIndex, int cell) {
   cells[cell - 1] = players[playerIndex - 1].getSymbol();
 }
 
-bool matchHorizontal(char *cells, int index) {
-  if (cells[index * 3] == cells[index * 3 + 1] &&
-      cells[index * 3 + 1] == cells[index * 3 + 2]) {
-    return true;
-  }
-
-  return false;
+bool matchHorizontal(const std::string &cells, int index) {
+  return cells[index * 3] == cells[index * 3 + 1] &&
+         cells[index * 3 + 1] == cells[index * 3 + 2];
 }
 
-bool matchVertical(char *cells, int index) {
-  if (cells[index] == cells[index + 3] &&
-      cells[index + 3] == cells[index + 6]) {
-    return true;
-  }
-
-  return false;
+bool matchVertical(const std::string &cells, int index) {
+  return cells[index] == cells[index + 3] &&
+         cells[index + 3] == cells[index + 6];
 }
 
-bool matchDiagonal1(char *cells, int index) {
-  if (cells[index] == cells[index + 2] &&
-      cells[index + 2] == cells[index + 4]) {
-    return true;
-  }
-
-  return false;
-}
-
-bool matchDiagonal2(char *cells, int index) {
-  if (cells[index] == cells[index * 2] &&
-      cells[index * 2] == cells[index * 4]) {
-    return true;
-  }
-
-  return false;
+bool matchDiagonal(const std::string &cells, int centerIndex = 5) {
+  return (cells[centerIndex] == cells[centerIndex + 4] &&
+          cells[centerIndex] == cells[centerIndex - 4]) ||
+         (cells[centerIndex] == cells[centerIndex + 2] &&
+          cells[centerIndex] == cells[centerIndex - 2]);
 }
 
 char Game::checkWinner() {
@@ -99,12 +71,8 @@ char Game::checkWinner() {
       state = cells[i];
   }
 
-  if (matchDiagonal1(cells, 0)) {
+  if (matchDiagonal(cells)) {
     state = cells[0];
-  }
-
-  if (matchDiagonal2(cells, 2)) {
-    state = cells[2];
   }
 
   return state;
